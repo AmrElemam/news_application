@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:news_application/data/api/api_manager.dart';
 import 'package:news_application/data/model/SourcesResponse.dart';
+import 'package:news_application/ui/screens/home/tabs/news/news_list/news_list.dart';
 
 class NewsTab extends StatefulWidget {
+  final String categoryId;
+
+  const NewsTab(this.categoryId, {super.key});
+
   @override
   State<NewsTab> createState() => _NewsTabState();
 }
@@ -13,7 +18,7 @@ class _NewsTabState extends State<NewsTab> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: ApiManager.getSources(),
+      future: ApiManager.getSources(widget.categoryId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return buildtabs(snapshot.data!);
@@ -45,11 +50,14 @@ class _NewsTabState extends State<NewsTab> {
                   .map((source) => buildTabWidget(source.name ?? "",
                       currentTabIndex == list.indexOf(source)))
                   .toList()),
+          const SizedBox(
+            height: 20,
+          ),
           Expanded(
             child: TabBarView(
                 children: list
-                    .map((_) => Container(
-                          color: Colors.red,
+                    .map((source) => NewsList(
+                          sourceId: source.id!,
                         ))
                     .toList()),
           )
@@ -60,14 +68,15 @@ class _NewsTabState extends State<NewsTab> {
 
   Widget buildTabWidget(String name, bool isSelected) {
     return Container(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-            color: isSelected ? Colors.blue : Colors.white,
+            color: isSelected ? const Color(0xff39A552) : Colors.white,
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: Colors.blue)),
+            border: Border.all(width: 2, color: const Color(0xff39A552))),
         child: Text(
           name,
-          style: TextStyle(color: isSelected ? Colors.white : Colors.blue),
+          style: TextStyle(
+              color: isSelected ? Colors.white : const Color(0xff39A552)),
         ));
   }
 }
